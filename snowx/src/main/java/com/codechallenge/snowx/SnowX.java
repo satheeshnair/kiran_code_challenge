@@ -6,37 +6,38 @@ import java.util.List;
 
 public class SnowX {
 
-    private static char[][] testData;
-    private static char[][] hpShip;
-    private static char[][] hpTorpedo;
+    private static final String TEST_DATA = "TEST_DATA";
+    private static final String TORPEDO = "HPtorpedo";
+    private static final String SHIP = "HPship";
 
     private static Source testDataSource;
     private static Source hpShipSource;
     private static Source hpTorpedoSource;
 
-    private static final String TORPEDO = "TORPEDO";
-    private static final String SHIP = "SHIP";
+
 
 
     public static void main(final String[] args) {
 
-        //sample data
+        //sample data path
         final String filePathforHPTorpedo = "src/main/resources/HPTorpedo.snw";
         final String filePathforHPShip = "src/main/resources/HPship.snw";
 
-        //test data
+        //test data path
         final String filePathforTestData = "src/main/resources/TestData.snw";
 
-        //hpShip Data
-        hpShip = getInputFileData(filePathforHPShip);
-        hpTorpedo = getInputFileData(filePathforHPTorpedo);
-        testData = getInputFileData(filePathforTestData);
+        char[][] inputData = getInputFileData(filePathforTestData);
+        testDataSource = new Source(inputData, TEST_DATA, inputData.length * inputData[0].length);
 
-        testDataSource = new Source(testData,"MainData", testData.length * testData[0].length);
-        hpShipSource = new Source(hpShip, SHIP,hpShip.length * hpShip[0].length);
-        hpTorpedoSource = new Source(hpTorpedo, TORPEDO,hpTorpedo.length * hpTorpedo[0].length);
+        char[][] hpShip = getInputFileData(filePathforHPTorpedo);
+        hpShipSource = new Source(getInputFileData(filePathforHPTorpedo), SHIP,hpShip.length * hpShip[0].length);
 
-        List<Target> targetList = findMatchingPatterns(testData, hpTorpedo, hpShip);
+        char[][] hpTorpedo = getInputFileData(filePathforHPShip);
+        hpTorpedoSource = new Source(getInputFileData(filePathforHPShip), TORPEDO,hpTorpedo.length * hpTorpedo[0].length);
+
+        List<Target> targetList = findMatchingPatterns();
+
+        System.out.println("target list size" + targetList.size());
 
         for (Target t: targetList) {
             if(t.getType() == SHIP) {
@@ -88,17 +89,20 @@ public class SnowX {
      *  find matching patterns for Torpedo and Ship
      *
      * */
-    private static List<Target> findMatchingPatterns(char[][] mainData, char[][] hpTorpedoData, char[][] hpShipData ) {
+    private static List<Target> findMatchingPatterns() {
         List<Target> targetList = new ArrayList<Target>();
-        //check torpedo
-        checkPattern(mainData, hpTorpedoData, targetList, TORPEDO);
-        checkPattern(mainData, hpShipData, targetList, SHIP);
+
+        //check hptorpedo
+        checkPattern(testDataSource.getData(), hpTorpedoSource.getData(), targetList, TORPEDO);
+
+        //check hpship
+        checkPattern(testDataSource.getData(), hpShipSource.getData(), targetList, SHIP);
 
         return targetList;
     }
 
     /*
-     *  split the data and call find confidence method to get the confidence
+     *  split the data and call find confidence method to get the confidence value
      *
      * */
     private static void checkPattern(char[][] mainData, char[][] checkData, List<Target> targetData, String type) {

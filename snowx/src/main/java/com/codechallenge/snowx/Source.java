@@ -6,6 +6,10 @@ public class Source {
     private String type;
     private int noOfElements;
 
+    public Source(String type) {
+        this.type = type;
+    }
+
     public Source(char[][] data, String type, int noOfElements) {
         this.data = data;
         this.type = type;
