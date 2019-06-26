@@ -14,35 +14,35 @@ public class SnowX {
     private static Source hpShipSource;
     private static Source hpTorpedoSource;
 
-
+    private static List<Target> targetList;
 
 
     public static void main(final String[] args) {
 
-        //sample data path
-        final String filePathforHPTorpedo = "src/main/resources/HPTorpedo.snw";
-        final String filePathforHPShip = "src/main/resources/HPship.snw";
-
         //test data path
-        final String filePathforTestData = "src/main/resources/TestData.snw";
+        final String filePathforTestData = args.length > 0 ? args[0] : "src/main/resources/TestData.snw";
+
+        //sample data path
+        final String filePathforHPTorpedo = args.length > 1 ? args[1] : "src/main/resources/HPTorpedo.snw";
+        final String filePathforHPShip = args.length > 2 ? args[2] : "src/main/resources/HPship.snw";
 
         char[][] inputData = getInputFileData(filePathforTestData);
         testDataSource = new Source(inputData, TEST_DATA, inputData.length * inputData[0].length);
 
-        char[][] hpShip = getInputFileData(filePathforHPTorpedo);
-        hpShipSource = new Source(getInputFileData(filePathforHPTorpedo), SHIP,hpShip.length * hpShip[0].length);
+        char[][] hpTorpedo = getInputFileData(filePathforHPTorpedo);
+        hpTorpedoSource  = new Source(getInputFileData(filePathforHPTorpedo), SHIP,hpTorpedo.length * hpTorpedo[0].length);
 
-        char[][] hpTorpedo = getInputFileData(filePathforHPShip);
-        hpTorpedoSource = new Source(getInputFileData(filePathforHPShip), TORPEDO,hpTorpedo.length * hpTorpedo[0].length);
+        char[][] hpShip = getInputFileData(filePathforHPShip);
+        hpShipSource = new Source(getInputFileData(filePathforHPShip), TORPEDO,hpShip.length * hpShip[0].length);
 
-        List<Target> targetList = findMatchingPatterns();
+        targetList = findMatchingPatterns();
+
 
         System.out.println("target list size" + targetList.size());
 
         for (Target t: targetList) {
-            if(t.getType() == SHIP) {
+            if(t.getType() == TORPEDO) {
                 System.out.println("target list " + t + " in the path specified.");
-                break;
             }
         }
     }
@@ -106,8 +106,8 @@ public class SnowX {
      *
      * */
     private static void checkPattern(char[][] mainData, char[][] checkData, List<Target> targetData, String type) {
-        for (int i = 0; i < mainData[0].length - checkData[0].length; i++) {
-            for (int j = 0; j < mainData.length - checkData.length; j++) {
+        for (int i = 0; i <= mainData[0].length - checkData[0].length; i++) {
+            for (int j = 0; j <= mainData.length - checkData.length; j++) {
                 double confidenceLevel  = findConfidence(mainData, checkData, i, j);
                 if (confidenceLevel > 0.6) {
                     targetData.add(new Target(type, i, j, confidenceLevel));
@@ -132,5 +132,9 @@ public class SnowX {
             }
         }
         return (double)similarityCount/(checkData.length * checkData[0].length);
+    }
+
+    public static List<Target> getTargetList() {
+        return targetList;
     }
 }
