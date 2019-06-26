@@ -39,11 +39,9 @@ public class SnowX {
 
 
         System.out.println("target list size" + targetList.size());
-
+        System.out.println("target list : ");
         for (Target t: targetList) {
-            if(t.getType() == TORPEDO) {
-                System.out.println("target list " + t + " in the path specified.");
-            }
+            System.out.println(t);
         }
     }
 
